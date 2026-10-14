@@ -1,0 +1,151 @@
+    <div id="map"></div>
+    <app-header />
+
+    <aside class="main" id="sidebar">
+        <div class="main-header">
+            <div class="main-title">Оформление доставки</div>
+            <div class="main-text">Выберите параметры для расчета отправления</div>
+        </div>
+        <div class="main-content">
+            <div class="main-route">
+                <div class="main-block-title">Маршрут</div>
+                <div class="main-fields">
+                    <div class="main-field" id="fromField">
+                        <div class="main-pin"></div>
+                        <input id="from" [(ngModel)]="from" (ngModelChange)="onRouteChange()" placeholder="Откуда: начните вводить адрес" autocomplete="off"/>
+                        <div class="main-ac" id="fromAc" role="listbox" aria-label="Подсказки адресов"></div>
+                    </div>
+                    <div class="main-field" id="toField">
+                        <div class="main-pin"></div>
+                        <input id="to" [(ngModel)]="to" (ngModelChange)="onRouteChange()" placeholder="Куда: начните вводить адрес" autocomplete="off"/>
+                        <div class="main-ac" id="toAc" role="listbox" aria-label="Подсказки адресов"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="main-package">
+                <div class="main-block-title">Размер посылки</div>
+                <div class="main-sizes">
+                    <div class="main-size-card" [class.is-active]="size === 'xs'" (click)="selectSize('xs')">
+                        <div class="main-size-top">
+                            <div class="main-size-label">XS</div>
+                            <div class="main-size-rate">9 ₽/км</div>
+                        </div>
+                        <div class="main-size-media">
+                            <img src="/images/sizes/xs.png" alt="Короб XS"/>
+                        </div>
+                        <div class="main-size-description">17×12×9 см,<br>до 0.5 кг</div>
+                    </div>
+                    <div class="main-size-card" [class.is-active]="size === 's'" (click)="selectSize('s')">
+                        <div class="main-size-top">
+                            <div class="main-size-label">S</div>
+                            <div class="main-size-rate">13 ₽/км</div>
+                        </div>
+                        <div class="main-size-media">
+                            <img src="/images/sizes/s.png" alt="Короб S"/>
+                        </div>
+                        <div class="main-size-description">23×19×10 см,<br>до 2 кг</div>
+                    </div>
+                    <div class="main-size-card" [class.is-active]="size === 'm'" (click)="selectSize('m')">
+                        <div class="main-size-top">
+                            <div class="main-size-label">M</div>
+                            <div class="main-size-rate">20 ₽/км</div>
+                        </div>
+                        <div class="main-size-media">
+                            <img src="/images/sizes/m.png" alt="Короб M"/>
+                        </div>
+                        <div class="main-size-description">33×25×15 см,<br>до 5 кг</div>
+                    </div>
+                    <div class="main-size-card" [class.is-active]="size === 'l'" (click)="selectSize('l')">
+                        <div class="main-size-top">
+                            <div class="main-size-label">L</div>
+                            <div class="main-size-rate">27 ₽/км</div>
+                        </div>
+                        <div class="main-size-media">
+                            <img src="/images/sizes/l.png" alt="Короб L"/>
+                        </div>
+                        <div class="main-size-description">31×25×38 см,<br>до 12 кг</div>
+                    </div>
+                    <div class="main-size-card" [class.is-active]="size === 'xl'" (click)="selectSize('xl')">
+                        <div class="main-size-top">
+                            <div class="main-size-label">XL</div>
+                            <div class="main-size-rate">35 ₽/км</div>
+                        </div>
+                        <div class="main-size-media">
+                            <img src="/images/sizes/xl.png" alt="Короб XL"/>
+                        </div>
+                        <div class="main-size-description">60×35×30 см,<br>до 18 кг</div>
+                    </div>
+                    <div class="main-size-card" [class.is-active]="size === 'max'" (click)="selectSize('max')">
+                        <div class="main-size-top">
+                            <div class="main-size-label">MAX</div>
+                            <div class="main-size-rate">70 ₽/км</div>
+                        </div>
+                        <div class="main-size-media main-size-media-palleta">
+                            <img src="/images/sizes/max.png" alt="Паллета"/>
+                        </div>
+                        <div class="main-size-description">120×120×80 см,<br>до 200 кг</div>
+                    </div>
+                </div>
+            </div>
+            <div class="main-speed">
+                <div class="main-block-title">Скорость доставки</div>
+                <div class="main-speeds">
+                    <div class="main-speed-card" [class.is-active]="speed === 'regular'" (click)="selectSpeed('regular')">
+                        <img class="main-speed-media" src="/images/icons/regular.svg" alt="Regular"/>
+                        <div class="main-speed-description">Обычная</div>
+                    </div>
+                    <div class="main-speed-card" [class.is-active]="speed === 'fast'" (click)="selectSpeed('fast')">
+                        <img class="main-speed-media" src="/images/icons/fast.svg" alt="Fast"/>
+                        <div class="main-speed-description">Приоритетная</div>
+                    </div>
+                </div>
+            </div>
+            <div class="main-calculate-block">
+                <button class="button calculate-button" type="button" [disabled]="!from.trim() || !to.trim() || calculating" (click)="calculate()">Рассчитать</button>
+            </div>
+            <div class="main-result" id="result">
+                <div class="main-result-title">Расчеты вашего заказа</div>
+                <div class="main-result-lines">
+                    <div class="main-result-line"><span>Расстояние</span><span >{{ distanceText }}</span></div>
+                    <div class="main-result-line"><span>Доставим через</span><span >{{ durationText }}</span></div>
+                    <div class="main-result-line"><span>Тариф</span><span >{{ rateText }}</span></div>
+                </div>
+                <div class="main-price">
+                    <div class="main-price-label">Итого</div>
+                    <div class="main-price-value" id="totalValue">{{ totalText }}</div>
+                </div>
+            </div>
+            <div class="main-order-box">
+                <div class="main-order-form" [style.display]="submitted ? 'none' : null">
+                    <div class="main-order-title">Оформление доставки</div>
+                    <div class="main-block-info-row">
+                        <div class="main-block-title">Контакты</div>
+                        <div class="order-fields">
+                            <div class="main-field">
+                                <input [(ngModel)]="customerName" placeholder="Ваше имя" autocomplete="off"/>
+                            </div>
+                            <div class="main-field">
+                                <input [(ngModel)]="customerPhone" placeholder="Ваш телефон" autocomplete="off" inputmode="tel"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="main-block-info-row extra-info">
+                        <div class="main-block-title">Дополнительная информация</div>
+                        <div class="main-field textarea">
+                            <textarea [(ngModel)]="comment" placeholder="Детали доставки и комментарии"></textarea>
+                        </div>
+                    </div>
+                    <button class="button main-submit-request" type="button" [disabled]="!calculation" (click)="submitOrder()">Отправить
+                        заявку
+                    </button>
+                </div>
+                <div class="main-order-success" [class.is-visible]="submitted">
+                    <div class="main-success-icon">✓</div>
+                    <div class="main-success-title">Заявка отправлена!</div>
+                    <div class="main-success-title">Номер отправления – <span >{{ orderId }}</span></div>
+                    <div class="main-success-subtitle">Мы скоро свяжемся с вами</div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
